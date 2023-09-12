@@ -1,50 +1,55 @@
 #!/bin/bash
+
+
+
+
 print_colorful_text() {
   local text="$1"
   local color_code="$2"
   echo "\e[${color_code}m${text}\e[0m"
 }
 
-# Need to be inside the root of Victima repository to mount this directory and pass it to Docker
-cm_repo=`cm find repo micro-2023-461`
+cm_repo=`cm find repo micro-2023-79`
 cm_repo_dir=${cm_repo#*= }
 echo "Changing to ${cm_repo_dir}"
 cd ${cm_repo_dir}
-###
 
-if [ -z "${CONTAINER_461}" ];  then
-  echo "Provide container: docker or podman"
-  exit
-elif [ "${CONTAINER_461}" = "docker" ]; then
-  container="docker"
-  echo "Using docker"
-elif [ "${CONTAINER_461}" = "podman" ]; then
-  container="podman"
-  echo "Using podman"
-else 
-  echo "Wrong container: provide docker or podman"
-fi 
+container="docker"
+image="micro2023-photon"
+ 
+echo "==================  Run a container test to make sure container works =================="
 
-mkdir -p ./plots
+#${container} run docker.io/hello-world
 
 
-${container} pull docker.io/kanell21/artifact_evaluation:victima_ptwcp_v1.1
+echo "==================  Build the Docker image to run the experiments =================="
 
+#${container} build  -t ${image} -f Dockerfile .
 
-${container} run --rm -v $PWD:/app/ docker.io/kanell21/artifact_evaluation:victima_ptwcp_v1.1 python3 /app/scripts/parse_nn_results.py /app/results/nn_results
+echo "==================  Get All Results =================="
 
-${container} run --rm -v $PWD:/app/ docker.io/kanell21/artifact_evaluation:victima_ptwcp_v1.1 python3 /app/scripts/create_csv.py
+mkdir figures
+##get all benchmarks
+#${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -check;cd /root/artifact_evaluation/micro2023_figures/r9nano;./r9nano.py;./r9nanolevels.py;mv *.png /root/figures/;mv *.pdf /root/figures/"
 
-exit_code=$?
-if [ $exit_code -ne 0 ]; then
-    print_colorful_text "Create_csv.py failed because experiments are still running." "33;1"
-    exit 
-fi
-
-${container} run --rm -v $PWD:/app/ docker.io/kanell21/artifact_evaluation:victima_ptwcp_v1.1 python3 /app/scripts/create_plots.py  > plots_in_tabular.txt
-
-
-print_colorful_text " Check plots_in_tabular.txt for the plots in tabular format (summer art is waiting for you) " "33;1"
-print_colorful_text " Check ./plots for the actual plots " "33;1"
-
-echo "====================================================================================="
+##get all benchmarks with architecture mi100
+#${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -arch=mi100 -check;cd /root/artifact_evaluation/micro2023_figures/mi100;./mi100.py;mv *.pdf /root/figures/;mv *.png /root/figures"
+#
+###vgg16
+#${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg16  -check;cd /root/artifact_evaluation/micro2023_figures/vgg16;./vgg16.py;./vgg16speedup.py;mv *.pdf /root/figures/;mv *.png /root/figures"
+###vgg19
+echo "Benchmarks    MGPUSim-Simtime    MGPUSim-Walltime    Photon-Simtime    Photon-Walltime"
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg19 -v 4 -check |grep Sum |awk -F Sum '{ printf \"vgg19\";print \$2}' "
+###resnet18
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet18 -check |grep Sum|awk -F Sum '{printf \"resnet18\";print \$2}'"
+####resnet32
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet32 -check |grep Sum|awk -F Sum '{printf \"resnet32\";print \$2}'"
+####resnet50
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet50 -check|grep Sum |awk -F Sum '{printf \"resnet50\";print \$2}'"
+####resnet101
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet101 -check|grep Sum|awk -F Sum '{printf \"resnet101\";print \$2}'"
+####resnet152
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet152 -check|grep Sum|awk -F Sum '{printf \"resnet152\";print \$2}'"
+##
+####
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testpagerank.py  -check|grep pagerank|grep -v __pagerank"

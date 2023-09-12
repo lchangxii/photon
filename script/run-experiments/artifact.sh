@@ -24,10 +24,29 @@ ${container} run docker.io/hello-world
 
 echo "==================  Build the Docker image to run the experiments =================="
 
-${container} build --no-cache -t ${image} -f Dockerfile .
+${container} build  -t ${image} -f Dockerfile .
 
-echo "==================  Compiling the simulator =================="
+echo "==================  Execute all benchmarks =================="
+mkdir gpudata
+##run all benchmarks
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py"
 
-${container} run --rm -v $PWD:/root/ ${image} /bin/bash -c "cd /root/"
+##run all benchmarks with architecture mi100
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -arch=mi100"
 
-
+##vgg16
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg16"
+##vgg19
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg19"
+##resnet18
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet18"
+##resnet32
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet32"
+##resnet50
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet50"
+##resnet101
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet101"
+##resnet152
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet152"
+##pagerank
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testpagerank.py"
