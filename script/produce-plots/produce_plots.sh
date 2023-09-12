@@ -30,13 +30,13 @@ echo "==================  Get All Results =================="
 
 mkdir figures
 ##get all benchmarks
-#${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -check;cd /root/artifact_evaluation/micro2023_figures/r9nano;./r9nano.py;./r9nanolevels.py;mv *.png /root/figures/;mv *.pdf /root/figures/"
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -check;cd /root/artifact_evaluation/micro2023_figures/r9nano;./r9nano.py;./r9nanolevels.py;mv *.png /root/figures/;mv *.pdf /root/figures/"
 
 ##get all benchmarks with architecture mi100
-#${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -arch=mi100 -check;cd /root/artifact_evaluation/micro2023_figures/mi100;./mi100.py;mv *.pdf /root/figures/;mv *.png /root/figures"
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testallbench.py -arch=mi100 -check;cd /root/artifact_evaluation/micro2023_figures/mi100;./mi100.py;mv *.pdf /root/figures/;mv *.png /root/figures"
 #
 ###vgg16
-#${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg16  -check;cd /root/artifact_evaluation/micro2023_figures/vgg16;./vgg16.py;./vgg16speedup.py;mv *.pdf /root/figures/;mv *.png /root/figures"
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg16  -check;cd /root/artifact_evaluation/micro2023_figures/vgg16;./vgg16.py;./vgg16speedup.py;mv *.pdf /root/figures/;mv *.png /root/figures"
 ###vgg19
 echo "Benchmarks    MGPUSim-Simtime    MGPUSim-Walltime    Photon-Simtime    Photon-Walltime"
 ${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg19 -v 4 -check |grep Sum |awk -F Sum '{ printf \"vgg19\";print \$2}' "
