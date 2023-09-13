@@ -39,7 +39,7 @@ ${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figur
 ${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg16  -check;cd /root/artifact_evaluation/micro2023_figures/vgg16;./vgg16.py;./vgg16speedup.py;mv *.pdf /root/figures/;mv *.png /root/figures"
 ###vgg19
 echo "Benchmarks    MGPUSim-Simtime    MGPUSim-Walltime    Photon-Simtime    Photon-Walltime"
-${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg19 -v 4 -check |grep Sum |awk -F Sum '{ printf \"vgg19\";print \$2}' "
+${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=vgg19  -check |grep Sum |awk -F Sum '{ printf \"vgg19\";print \$2}' "
 ###resnet18
 ${container} run --rm -v $PWD/gpudata:/root/gpudata/ -v $PWD/figures:/root/figures/ ${image} /bin/bash -c "cd /root/artifact_evaluation/sampled-mgpu-sim/samples/sampledrunner;./testdlapps.py -bench=resnet18 -check |grep Sum|awk -F Sum '{printf \"resnet18\";print \$2}'"
 ####resnet32
