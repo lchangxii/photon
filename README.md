@@ -1,6 +1,6 @@
 
 # Artifact Evaluation for our MICRO 2023 paper called "Photon"
-This git repo forks from https://github.com/CMU-SAFARI/Victima.git to archive MLCommons.
+This git repo forks from https://github.com/CMU-SAFARI/Victima.git to achieve MLCommons.
 ### Reusability using MLCommons
 
 We added support to evaluate Photon using the [MLCommons CM automation language](https://github.com/mlcommons/ck).
